@@ -7,22 +7,31 @@ import {
   Stack,
   MenuItem,
 } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/client';
 
 export function LoginPage() {
-  const { login } = useAuthContext();
+  const { login, studentLogin } = useAuthContext();
   const navigate = useNavigate();
 
-  const [mode, setMode] = useState<'admin' | 'student'>('student');
+  const [mode, setMode] = useState<'admin' | 'student'>('admin');
 
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (mode === 'admin') {
+      setIdentifier('');
+      setPassword('');
+    } else {
+      setIdentifier('');
+      setPassword('');
+    }
+  }, [mode]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,15 +40,10 @@ export function LoginPage() {
 
     try {
       if (mode === 'admin') {
-        await login(identifier, password); 
+        await login(identifier, password);
         navigate('/dashboard');
       } else {
-        const { data } = await api.post('/auth/student/student-login', {
-          email: identifier,
-          password: password,
-        });
-
-        localStorage.setItem('token', data.token);
+        await studentLogin(identifier, password);
         navigate('/student-area');
       }
     } catch (err: any) {
@@ -62,13 +66,16 @@ export function LoginPage() {
           Controle de Ocupação
         </Typography>
 
-        {/* SELECTOR ADM / ESTUDANTE */}
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          Escolha o tipo de acesso:
+        </Typography>
+
         <TextField
           select
-          label="Tipo de Login"
           fullWidth
           size="small"
           sx={{ mb: 3 }}
+          label="Tipo de login"
           value={mode}
           onChange={(e) => setMode(e.target.value as 'admin' | 'student')}
         >
@@ -78,11 +85,11 @@ export function LoginPage() {
 
         <Box component="form" onSubmit={handleSubmit}>
           <Stack spacing={2}>
-
             <TextField
               label={mode === 'admin' ? 'E-mail' : 'Matrícula'}
-              fullWidth
+              type={mode === 'admin' ? 'email' : 'text'}
               size="small"
+              fullWidth
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
             />
@@ -90,8 +97,8 @@ export function LoginPage() {
             <TextField
               label="Senha"
               type="password"
-              fullWidth
               size="small"
+              fullWidth
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -105,6 +112,7 @@ export function LoginPage() {
             <Button
               type="submit"
               variant="contained"
+              color="primary"
               disabled={loading}
             >
               {loading ? 'Entrando...' : 'Entrar'}

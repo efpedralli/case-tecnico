@@ -9,8 +9,8 @@ import {
   Button,
 } from '@mui/material';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   title?: string;
@@ -18,12 +18,21 @@ type Props = {
 };
 
 export function AppShell({ title, children }: Props) {
-  const { logout } = useAuth();
+  const { logout, role } = useAuth();
   const navigate = useNavigate();
+
+  const isAdmin = role === 'admin';
+  const isStudent = role === 'student';
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleLogoClick = () => {
+    if (isAdmin) navigate('/dashboard');
+    else if (isStudent) navigate('/student-area');
+    else navigate('/login');
   };
 
   return (
@@ -34,24 +43,46 @@ export function AppShell({ title, children }: Props) {
           <Typography
             variant="h6"
             sx={{ flexGrow: 1, fontWeight: 600, cursor: 'pointer' }}
-            onClick={() => navigate('/dashboard')}
+            onClick={handleLogoClick}
           >
             OcupaPUC
           </Typography>
 
-          <Button color="inherit" onClick={() => navigate('/students')}>
-            Alunos
-          </Button>
-          <Button color="inherit" onClick={() => navigate('/checkin')}>
-            Presenças
-          </Button>
-          <Button color="inherit" onClick={() => navigate('/dashboard')}>
-            Dashboard
-          </Button>
+          {/* MENU PARA ADMIN */}
+          {isAdmin && (
+            <>
+              <Button color="inherit" onClick={() => navigate('/dashboard')}>
+                Dashboard
+              </Button>
+              <Button color="inherit" onClick={() => navigate('/students')}>
+                Alunos
+              </Button>
+              <Button color="inherit" onClick={() => navigate('/checkin')}>
+                Presenças
+              </Button>
+            </>
+          )}
 
-          <IconButton color="inherit" onClick={handleLogout}>
-            <Typography variant="body2">Sair</Typography>
-          </IconButton>
+          {/* MENU PARA ESTUDANTE */}
+          {isStudent && (
+            <>
+              <Button color="inherit" onClick={() => navigate('/student-area')}>
+                Minha Área
+              </Button>
+              <Button
+                color="inherit"
+                onClick={() => navigate('/student-history')}
+              >
+                Histórico
+              </Button>
+            </>
+          )}
+
+          {(isAdmin || isStudent) && (
+            <IconButton color="inherit" onClick={handleLogout}>
+              <Typography variant="body2">Sair</Typography>
+            </IconButton>
+          )}
         </Toolbar>
       </AppBar>
 

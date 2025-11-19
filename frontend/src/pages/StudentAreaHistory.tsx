@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import api from '../api/client';
 import { getStudentFromToken } from '../utils/getStudentFromToken';
 import { useNavigate } from 'react-router-dom';
+import { AppShell } from '../design-system/components/AppShell';
 
 export function StudentAreaHistory() {
   const navigate = useNavigate();
@@ -30,15 +31,13 @@ export function StudentAreaHistory() {
   }, []);
 
   return (
+    <AppShell title="Meu Histórico de Presenças">
     <Box
       minHeight="100vh"
       bgcolor="background.default"
       color="text.primary"
       p={4}
     >
-      <Typography variant="h5" sx={{ mb: 3 }}>
-        Meu Histórico de Presenças
-      </Typography>
 
       <Stack spacing={2}>
         {entries.map((e) => (
@@ -64,5 +63,6 @@ export function StudentAreaHistory() {
         Voltar
       </Button>
     </Box>
+    </AppShell>
   );
 }

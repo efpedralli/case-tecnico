@@ -94,9 +94,6 @@ export function StudentAreaPage() {
       color="text.primary"
       p={4}
     >
-      <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-        Bem-vindo(a) — Área do Estudante
-      </Typography>
 
       {myStatus?.inEnvironmentId ? (
         <Box sx={{ mb: 3 }}>

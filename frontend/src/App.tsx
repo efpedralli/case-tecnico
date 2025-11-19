@@ -1,17 +1,23 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-
-import { useAuthContext } from './context/AuthContext';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { StudentsPage } from './pages/StudentsPage';
 import { CheckinPage } from './pages/CheckinPage';
 import { StudentAreaPage } from './pages/StudentAreaPage';
 import { StudentAreaHistory } from './pages/StudentAreaHistory';
+import { useAuthContext } from './context/AuthContext';
 
-
-function PrivateRoute({ children }: { children: JSX.Element }) {
-  const { token } = useAuthContext();
+function AdminRoute({ children }: { children: JSX.Element }) {
+  const { token, role } = useAuthContext();
   if (!token) return <Navigate to="/login" replace />;
+  if (role !== 'admin') return <Navigate to="/student-area" replace />;
+  return children;
+}
+
+function StudentRoute({ children }: { children: JSX.Element }) {
+  const { token, role } = useAuthContext();
+  if (!token) return <Navigate to="/login" replace />;
+  if (role !== 'student') return <Navigate to="/dashboard" replace />;
   return children;
 }
 
@@ -19,33 +25,53 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+
+      {/* ROTAS ADMIN */}
       <Route
         path="/dashboard"
         element={
-          <PrivateRoute>
+          <AdminRoute>
             <DashboardPage />
-          </PrivateRoute>
+          </AdminRoute>
         }
       />
       <Route
         path="/students"
         element={
-          <PrivateRoute>
+          <AdminRoute>
             <StudentsPage />
-          </PrivateRoute>
+          </AdminRoute>
         }
       />
       <Route
         path="/checkin"
         element={
-          <PrivateRoute>
+          <AdminRoute>
             <CheckinPage />
-          </PrivateRoute>
+          </AdminRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/dashboard" />} />
-      <Route path="/student-area" element={<StudentAreaPage />} />
-      <Route path="/student-history" element={<StudentAreaHistory />} />
+
+      {/* ROTAS ESTUDANTE */}
+      <Route
+        path="/student-area"
+        element={
+          <StudentRoute>
+            <StudentAreaPage />
+          </StudentRoute>
+        }
+      />
+      <Route
+        path="/student-history"
+        element={
+          <StudentRoute>
+            <StudentAreaHistory />
+          </StudentRoute>
+        }
+      />
+
+      {/* DEFAULT */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
