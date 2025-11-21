@@ -69,7 +69,7 @@ export function StudentScanPage() {
           <Box sx={{ maxWidth: 400, mx: 'auto' }}>
             <QrReader
               constraints={{ facingMode: 'environment' }}
-              onResult={(result, error) => {
+              onResult={(result) => {
                 if (!!result && !loading) {
                   const text = result.getText();
                   processQR(text);
