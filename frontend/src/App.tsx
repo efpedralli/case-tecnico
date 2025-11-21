@@ -1,3 +1,4 @@
+import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -12,14 +13,14 @@ import { StudentScanPage } from './pages/StudentScanPage';
 
 
 
-function AdminRoute({ children }: { children: JSX.Element }) {
+function AdminRoute({ children }: { children: React.ReactElement }) {
   const { token, role } = useAuthContext();
   if (!token) return <Navigate to="/login" replace />;
   if (role !== 'admin') return <Navigate to="/student-area" replace />;
   return children;
 }
 
-function StudentRoute({ children }: { children: JSX.Element }) {
+function StudentRoute({ children }: { children: React.ReactElement }) {
   const { token, role } = useAuthContext();
   if (!token) return <Navigate to="/login" replace />;
   if (role !== 'student') return <Navigate to="/dashboard" replace />;

@@ -145,70 +145,6 @@ function toggleSort(field: 'name' | 'registration') {
     ).getTime();
 
 
-  const chartOptions: ApexOptions = {
-  chart: {
-    id: 'environment-occupancy',
-    zoom: { enabled: true },
-    toolbar: { show: true },
-    foreColor: '#FFFFFF',
-  },
-  xaxis: {
-    type: 'datetime',
-    min: startOfDay,
-    title: {
-      text: 'Tempo',
-      style: {
-        color: '#FFFFFF',
-        fontSize: '14px',
-        fontWeight: 600,
-      }
-    },
-    labels: {
-      style: {
-        colors: '#CCCCCC',
-      },
-    },
-  },
-  yaxis: {
-    min: 0,
-    forceNiceScale: true,
-    title: {
-      text: 'Quantidade de alunos',
-      style: {
-        color: theme.palette.grey[500],
-        fontSize: '14px',
-        fontWeight: 600,
-      }
-    },
-    labels: {
-      style: {
-        colors: theme.palette.grey[500],
-      },
-      formatter: (val) => Math.round(val).toString(),
-    },
-  },
-  stroke: {
-    curve: 'straight',
-    width: 3,
-    colors: [theme.palette.secondary.main], 
-  },
-  grid: {
-    borderColor: theme.palette.grey[800],
-    xaxis: {
-      lines: { show: true },
-    },
-    yaxis: {
-      lines: { show: true },
-    },
-  },
-  tooltip: {
-    theme: 'dark',
-    x: { format: 'dd/MM/yyyy HH:mm' },
-  },
-  dataLabels: { enabled: false },
-};
-
-
   const chartSeries = [
     {
       name: 'Ocupação',
@@ -390,7 +326,69 @@ function toggleSort(field: 'name' | 'registration') {
             </Typography>
           ) : (
             <ReactApexChart
-              options={chartOptions}
+              options={{
+                chart: {
+                  id: 'environment-occupancy',
+                  zoom: { enabled: true },
+                  toolbar: { show: true },
+                  foreColor: '#FFFFFF',
+                },
+                xaxis: {
+                  type: 'datetime',
+                  min: startOfDay,
+                  title: {
+                    text: 'Tempo',
+                    style: {
+                      color: '#FFFFFF',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                    }
+                  },
+                  labels: {
+                    style: {
+                      colors: '#CCCCCC',
+                    },
+                  },
+                },
+                yaxis: {
+                  min: 0,
+                  forceNiceScale: true,
+                  title: {
+                    text: 'Quantidade de alunos',
+                    style: {
+                      color: theme.palette.grey[500],
+                      fontSize: '14px',
+                      fontWeight: 600,
+                    }
+                  },
+                  labels: {
+                    style: {
+                      colors: theme.palette.grey[500],
+                    },
+                    formatter: (val: number) => Math.round(val).toString(),
+                  },
+                },
+                stroke: {
+                  curve: 'straight',
+                  width: 3,
+                  colors: [theme.palette.secondary.main], 
+                },
+                grid: {
+                  borderColor: theme.palette.grey[800],
+                  xaxis: {
+                    lines: { show: true },
+                  },
+                  yaxis: {
+                    lines: { show: true },
+                  },
+                },
+                tooltip: {
+                  theme: 'dark',
+                  x: { format: 'dd/MM/yyyy HH:mm' },
+                },
+                dataLabels: { enabled: false },                
+              }}
+            
               series={chartSeries}
               type="line"
               height={350}

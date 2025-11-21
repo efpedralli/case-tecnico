@@ -37,6 +37,14 @@ type Environment = {
   type: string;
 };
 
+interface StudentData {
+    name: string;
+    registration: string;
+    course: string;
+    email: string;
+    [key: string]: any;
+}
+
 
 export function StudentHistoryAdminPage() {
   const navigate = useNavigate();
@@ -278,62 +286,64 @@ async function handleAdminCheckout() {
             Dados do Aluno
           </Typography>
 
-          <Stack spacing={2}>
+        
+
+        <Stack spacing={2}>
             <TextField
-              label="Nome"
-              value={studentName}
-              onChange={(e) => setStudentName(e.target.value)}
+                label="Nome"
+                value={studentName}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStudentName(e.target.value)}
             />
 
             <TextField
-              label="Matrícula"
-              value={studentData?.registration || ''}
-              onChange={(e) =>
-                setStudentData((prev) => ({
-                  ...prev,
-                  registration: e.target.value,
-                }))
-              }
+                label="Matrícula"
+                value={studentData?.registration || ''}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setStudentData((prev: StudentData) => ({
+                        ...prev,
+                        registration: e.target.value,
+                    }))
+                }
             />
 
             <TextField
-              label="Curso"
-              value={studentData?.course || ''}
-              onChange={(e) =>
-                setStudentData((prev) => ({
-                  ...prev,
-                  course: e.target.value,
-                }))
-              }
+                label="Curso"
+                value={studentData?.course || ''}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setStudentData((prev: StudentData) => ({
+                        ...prev,
+                        course: e.target.value,
+                    }))
+                }
             />
 
             <TextField
-              label="E-mail"
-              value={studentData?.email || ''}
-              onChange={(e) =>
-                setStudentData((prev) => ({
-                  ...prev,
-                  email: e.target.value,
-                }))
-              }
+                label="E-mail"
+                value={studentData?.email || ''}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setStudentData((prev: StudentData) => ({
+                        ...prev,
+                        email: e.target.value,
+                    }))
+                }
             />
 
             <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleUpdate}
+                variant="contained"
+                color="secondary"
+                onClick={handleUpdate}
             >
-              Salvar alterações
+                Salvar alterações
             </Button>
 
             <Button
-              variant="outlined"
-              color="error"
-              onClick={handleSoftDelete}
+                variant="outlined"
+                color="error"
+                onClick={handleSoftDelete}
             >
-              Arquivar aluno
+                Arquivar aluno
             </Button>
-          </Stack>
+        </Stack>
         </Card>
       </Box>
     </Stack>
