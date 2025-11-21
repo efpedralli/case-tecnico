@@ -7,6 +7,9 @@ import { StudentAreaPage } from './pages/StudentAreaPage';
 import { StudentAreaHistory } from './pages/StudentAreaHistory';
 import { useAuthContext } from './context/AuthContext';
 import { StudentHistoryAdminPage } from './pages/StudentHistoryAdminPage';
+import { EnvironmentManagementPage } from './pages/EnvironmentManagementPage';
+import { StudentScanPage } from './pages/StudentScanPage';
+
 
 
 function AdminRoute({ children }: { children: JSX.Element }) {
@@ -79,6 +82,24 @@ export default function App() {
           </StudentRoute>
         }
       />
+      <Route
+        path="/environment/:id"
+        element={
+          <AdminRoute>
+            <EnvironmentManagementPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+  path="/student-scan"
+  element={
+    <StudentRoute>
+      <StudentScanPage />
+    </StudentRoute>
+  }
+/>
+
+
 
       {/* DEFAULT */}
       <Route path="*" element={<Navigate to="/login" replace />} />

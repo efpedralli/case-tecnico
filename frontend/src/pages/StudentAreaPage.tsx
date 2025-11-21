@@ -121,8 +121,18 @@ export function StudentAreaPage() {
       )}
 
       <Typography variant="h6" sx={{ mb: 2 }}>
-        Ambientes Disponíveis
-      </Typography>
+  Ambientes Disponíveis
+</Typography>
+
+<Box sx={{ mb: 2 }}>
+  <Button
+    variant="contained"
+    onClick={() => navigate('/student-scan')}
+  >
+    Ler QR Code da sala
+  </Button>
+</Box>
+
 
       <Stack spacing={2}>
         {envs.map((env) => {

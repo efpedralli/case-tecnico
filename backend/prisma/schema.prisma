@@ -22,13 +22,15 @@ model User {
 }
 
 model Student {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   name         String
-  registration String?  @unique
-  email        String?  @unique
+  registration String?   @unique
+  email        String?   @unique
   course       String?
   passwordHash String?
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+  deletedAt    DateTime?
   entries      Entry[]
 }
 
@@ -37,6 +39,7 @@ model Environment {
   name      String
   type      EnvironmentType
   capacity  Int?
+  block     String?
   createdAt DateTime        @default(now())
   entries   Entry[]
 }

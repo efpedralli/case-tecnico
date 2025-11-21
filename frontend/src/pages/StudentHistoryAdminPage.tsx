@@ -4,6 +4,11 @@ import {
   Stack,
   Typography,
   Button,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -15,9 +20,17 @@ type Entry = {
   checkInAt: string;
   checkOutAt: string | null;
   environment: {
+    id: number;
     name: string;
   };
 };
+
+type Environment = {
+  id: number;
+  name: string;
+  type: string;
+};
+
 
 export function StudentHistoryAdminPage() {
   const navigate = useNavigate();
@@ -25,6 +38,12 @@ export function StudentHistoryAdminPage() {
 
   const [entries, setEntries] = useState<Entry[]>([]);
   const [studentName, setStudentName] = useState<string>('');
+  const [studentData, setStudentData] = useState<any>(null);
+  const [envs, setEnvs] = useState<Environment[]>([]);
+const [selectedEnvId, setSelectedEnvId] = useState<number | ''>('');
+const [presenceLoading, setPresenceLoading] = useState(false);
+
+
 
   async function loadHistory() {
     if (!id) return;
@@ -32,22 +51,114 @@ export function StudentHistoryAdminPage() {
       params: { studentId: id },
     });
     setEntries(data);
+    
 
     try {
-      const studentRes = await api.get(`/students/${id}`);
-      setStudentName(studentRes.data.name);
-    } catch {
-      setStudentName('');
-    }
+  const studentRes = await api.get(`/students/${id}`);
+  setStudentName(studentRes.data.name);
+  setStudentData(studentRes.data);
+
+  const envRes = await api.get<Environment[]>('/environments');
+  setEnvs(envRes.data);
+} catch {
+  setStudentName('');
+}
+
   }
 
   useEffect(() => {
     loadHistory();
   }, [id]);
 
-  return (
-    <AppShell title="Histórico de Presenças do Aluno">
-      <Box>
+  async function handleUpdate() {
+  if (!id) return;
+
+  try {
+    await api.put(`/students/${id}`, {
+      name: studentName,
+      registration: studentData.registration,
+      email: studentData.email,
+      course: studentData.course,
+    });
+
+    alert('Dados atualizados com sucesso!');
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao atualizar aluno.');
+  }
+}
+
+async function handleSoftDelete() {
+  if (!id) return;
+
+  if (!confirm('Tem certeza que deseja arquivar este aluno?')) return;
+
+  try {
+    await api.delete(`/students/${id}`);
+    alert('Aluno arquivado com sucesso!');
+    navigate('/students');
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao arquivar aluno.');
+  }
+}
+
+const currentOpenEntry = entries.find((e) => e.checkOutAt === null);
+const currentEnvId = currentOpenEntry?.environment?.id;
+const currentEnvName = currentOpenEntry?.environment?.name;
+
+async function handleAdminCheckin() {
+  if (!id || !selectedEnvId) {
+    alert('Selecione uma sala para registrar a entrada.');
+    return;
+  }
+
+  try {
+    setPresenceLoading(true);
+    await api.post('/entries/checkin', {
+      studentId: Number(id),
+      environmentId: selectedEnvId,
+    });
+    await loadHistory();
+    alert('Entrada registrada com sucesso!');
+  } catch (err: any) {
+    console.error(err);
+    alert(
+      err?.response?.data?.message ||
+        'Erro ao registrar entrada. Verifique se o aluno já não está em outra sala.'
+    );
+  } finally {
+    setPresenceLoading(false);
+  }
+}
+
+async function handleAdminCheckout() {
+  if (!id) return;
+
+  try {
+    setPresenceLoading(true);
+    await api.post('/entries/checkout', {
+      studentId: Number(id),
+    });
+    await loadHistory();
+    alert('Saída registrada com sucesso!');
+  } catch (err: any) {
+    console.error(err);
+    alert(
+      err?.response?.data?.message ||
+        'Erro ao registrar saída. Verifique se o aluno possui presença em aberto.'
+    );
+  } finally {
+    setPresenceLoading(false);
+  }
+}
+
+
+    return (
+  <AppShell title="Histórico e Dados do Aluno">
+    <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
+      
+      <Box flex={2}>
         {studentName && (
           <Typography variant="h6" sx={{ mb: 2 }}>
             Aluno: {studentName}
@@ -87,6 +198,125 @@ export function StudentHistoryAdminPage() {
           Voltar para lista de alunos
         </Button>
       </Box>
-    </AppShell>
-  );
+
+      <Box flex={1}>
+        <Card sx={{ p: 3 }}>
+            <Typography variant="subtitle1" sx={{ mt: 3 }}>
+  Presença manual
+</Typography>
+
+{currentEnvId ? (
+  <Typography variant="body2" sx={{ mb: 1 }}>
+    Atualmente em: <strong>{currentEnvName}</strong>
+  </Typography>
+) : (
+  <Typography variant="body2" sx={{ mb: 1 }}>
+    Este aluno não está presente em nenhuma sala no momento.
+  </Typography>
+)}
+
+<FormControl fullWidth size="small" sx={{ mt: 1 }}>
+  <InputLabel id="env-select-label">Sala</InputLabel>
+  <Select
+    labelId="env-select-label"
+    label="Sala"
+    value={selectedEnvId}
+    onChange={(e) =>
+      setSelectedEnvId(e.target.value ? Number(e.target.value) : '')
+    }
+  >
+    {envs.map((env) => (
+      <MenuItem key={env.id} value={env.id}>
+        {env.name}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
+
+<Stack direction="row" spacing={2} sx={{ mt: 2, mb: 3 }}>
+  <Button
+    variant="contained"
+    color="secondary"
+    onClick={handleAdminCheckin}
+    disabled={presenceLoading || !selectedEnvId}
+  >
+    Registrar entrada
+  </Button>
+
+  <Button
+    variant="outlined"
+    color="secondary"
+    onClick={handleAdminCheckout}
+    disabled={presenceLoading || !currentEnvId}
+  >
+    Registrar saída
+  </Button>
+</Stack>
+
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Dados do Aluno
+          </Typography>
+
+          <Stack spacing={2}>
+            <TextField
+              label="Nome"
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+            />
+
+            <TextField
+              label="Matrícula"
+              value={studentData?.registration || ''}
+              onChange={(e) =>
+                setStudentData((prev) => ({
+                  ...prev,
+                  registration: e.target.value,
+                }))
+              }
+            />
+
+            <TextField
+              label="Curso"
+              value={studentData?.course || ''}
+              onChange={(e) =>
+                setStudentData((prev) => ({
+                  ...prev,
+                  course: e.target.value,
+                }))
+              }
+            />
+
+            <TextField
+              label="E-mail"
+              value={studentData?.email || ''}
+              onChange={(e) =>
+                setStudentData((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                }))
+              }
+            />
+
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleUpdate}
+            >
+              Salvar alterações
+            </Button>
+
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleSoftDelete}
+            >
+              Arquivar aluno
+            </Button>
+          </Stack>
+        </Card>
+      </Box>
+    </Stack>
+  </AppShell>
+);
+
 }

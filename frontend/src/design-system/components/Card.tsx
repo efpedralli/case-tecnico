@@ -7,11 +7,18 @@ type Props = PaperProps & {
 };
 
 export function Card({ children, ...rest }: Props) {
+  // Extract sx from rest to merge with defaults
+  const { sx, ...paperProps } = rest;
   return (
     <Paper
       elevation={2}
-      sx={{ p: 3, borderRadius: 3, border: '1px solid #1f2937' }}
-      {...rest}
+      sx={{
+        p: 3,
+        borderRadius: 3,
+        border: '1px solid #1f2937',
+        ...(sx || {}),
+      }}
+      {...paperProps}
     >
       {children}
     </Paper>

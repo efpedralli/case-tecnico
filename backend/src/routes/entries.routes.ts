@@ -91,6 +91,7 @@ entriesRouter.get('/occupancy', async (_req, res) => {
       type: env.type,
       currentOccupancy: env.entries.length,
       capacity: env.capacity,
+      block: env.block,
     }));
 
     return res.json(result);
@@ -100,20 +101,33 @@ entriesRouter.get('/occupancy', async (_req, res) => {
   }
 });
 
+// GET /api/entries/history?studentId=123&environmentId=5
 entriesRouter.get('/history', ensureAuthenticated, async (req, res) => {
   try {
-    const { studentId } = req.query;
+    const { studentId, environmentId } = req.query;
 
-    if (!studentId) {
-      return res
-        .status(400)
-        .json({ message: 'studentId é obrigatório na query string.' });
+    if (!studentId && !environmentId) {
+      return res.status(400).json({
+        message: 'Informe studentId ou environmentId na query string.',
+      });
+    }
+
+    const where: any = {};
+
+    if (studentId) {
+      where.studentId = Number(studentId);
+    }
+
+    if (environmentId) {
+      where.environmentId = Number(environmentId);
     }
 
     const entries = await prisma.entry.findMany({
-      where: { studentId: Number(studentId) },
-      orderBy: { checkInAt: 'desc' },
-      include: { environment: true },
+      where,
+      orderBy: { checkInAt: 'asc' },
+      include: {
+        environment: true,
+      },
     });
 
     return res.json(entries);
@@ -124,3 +138,4 @@ entriesRouter.get('/history', ensureAuthenticated, async (req, res) => {
       .json({ message: 'Erro ao buscar histórico de presenças.' });
   }
 });
+

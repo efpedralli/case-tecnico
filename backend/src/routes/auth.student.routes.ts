@@ -17,7 +17,10 @@ studentAuthRouter.post('/student-login', async (req, res) => {
     }
 
     const student = await prisma.student.findUnique({
-      where: { email },
+      where: { 
+        email, 
+        deletedAt: null 
+      },
     });
 
     if (!student || !student.passwordHash) {

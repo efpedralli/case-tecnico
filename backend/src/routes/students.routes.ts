@@ -13,6 +13,7 @@ studentsRouter.get('/', async (_req, res) => {
   try {
     const students = await prisma.student.findMany({
       orderBy: { createdAt: 'desc' },
+       where: { deletedAt: null },
     });
     return res.json(students);
   } catch (err) {
@@ -25,7 +26,9 @@ studentsRouter.get('/', async (_req, res) => {
 studentsRouter.get('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const student = await prisma.student.findUnique({ where: { id } });
+    const student = await prisma.student.findUnique({ 
+      where: { id, deletedAt: null } 
+    });
     if (!student) return res.status(404).json({ message: 'Aluno não encontrado.' });
     return res.json(student);
   } catch (err) {
@@ -78,7 +81,13 @@ studentsRouter.put('/:id', async (req, res) => {
 
     const student = await prisma.student.update({
       where: { id },
-      data: { name, registration, email, course },
+      data: { 
+        name, 
+        registration, 
+        email, 
+        course,
+        updatedAt: new Date(),
+       },
     });
 
     return res.json(student);
@@ -95,16 +104,22 @@ studentsRouter.put('/:id', async (req, res) => {
 studentsRouter.delete('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
-    await prisma.student.delete({ where: { id } });
-    return res.status(204).send();
+
+    const updated = await prisma.student.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+
+    return res.status(200).json({ message: 'Aluno arquivado com sucesso.' });
   } catch (err: any) {
     console.error(err);
     if (err.code === 'P2025') {
       return res.status(404).json({ message: 'Aluno não encontrado.' });
     }
-    return res.status(500).json({ message: 'Erro ao remover aluno.' });
+    return res.status(500).json({ message: 'Erro ao arquivar aluno.' });
   }
 });
+
 
 // POST /api/students/bulk
 studentsRouter.post('/bulk', async (req, res) => {

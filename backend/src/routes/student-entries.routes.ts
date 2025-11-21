@@ -71,3 +71,65 @@ studentEntriesRouter.post('/checkout', async (req: StudentAuthRequest, res) => {
     return res.status(500).json({ message: 'Erro ao registrar saída.' });
   }
 });
+
+// POST /api/student/entries/qr-toggle
+studentEntriesRouter.post('/qr-toggle', async (req: StudentAuthRequest, res) => {
+  try {
+    const studentId = req.studentId!;
+    const { environmentId } = req.body;
+
+    if (!environmentId) {
+      return res.status(400).json({ message: 'environmentId é obrigatório.' });
+    }
+
+    const envIdNum = Number(environmentId);
+
+    const environment = await prisma.environment.findUnique({
+      where: { id: envIdNum },
+    });
+
+    if (!environment) {
+      return res.status(404).json({ message: 'Ambiente não encontrado.' });
+    }
+
+    const openEntry = await prisma.entry.findFirst({
+      where: { studentId, checkOutAt: null },
+      orderBy: { checkInAt: 'desc' },
+    });
+
+    if (openEntry && openEntry.environmentId === envIdNum) {
+      const updated = await prisma.entry.update({
+        where: { id: openEntry.id },
+        data: { checkOutAt: new Date() },
+      });
+
+      return res.json({
+        action: 'checkout',
+        entry: updated,
+        message: `Saída registrada na sala ${environment.name}.`,
+      });
+    }
+
+    if (openEntry && openEntry.environmentId !== envIdNum) {
+      return res.status(400).json({
+        message: 'Você já está com presença aberta em outra sala.',
+      });
+    }
+
+    const created = await prisma.entry.create({
+      data: {
+        studentId,
+        environmentId: envIdNum,
+      },
+    });
+
+    return res.status(201).json({
+      action: 'checkin',
+      entry: created,
+      message: `Entrada registrada na sala ${environment.name}.`,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Erro ao processar QR Code.' });
+  }
+});
