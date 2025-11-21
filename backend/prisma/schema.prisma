@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum EnvironmentType {
+  sala
+  laboratorio
+  estudos
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   name         String
@@ -16,29 +22,31 @@ model User {
 }
 
 model Student {
-  id            Int       @id @default(autoincrement())
-  name          String
-  registration  String?   @unique
-  email         String?   @unique
-  createdAt     DateTime  @default(now())
-  entries       Entry[]
+  id           Int      @id @default(autoincrement())
+  name         String
+  registration String?  @unique
+  email        String?  @unique
+  course       String?
+  passwordHash String?
+  createdAt    DateTime @default(now())
+  entries      Entry[]
 }
 
 model Environment {
-  id        Int      @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   name      String
-  type      String   // "sala", "laboratorio", "estudos"
+  type      EnvironmentType
   capacity  Int?
-  createdAt DateTime @default(now())
+  createdAt DateTime        @default(now())
   entries   Entry[]
 }
 
 model Entry {
-  id             Int          @id @default(autoincrement())
-  studentId      Int
-  environmentId  Int
-  checkInAt      DateTime     @default(now())
-  checkOutAt     DateTime?
+  id            Int       @id @default(autoincrement())
+  studentId     Int
+  environmentId Int
+  checkInAt     DateTime  @default(now())
+  checkOutAt    DateTime?
 
   student     Student     @relation(fields: [studentId], references: [id])
   environment Environment @relation(fields: [environmentId], references: [id])

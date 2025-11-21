@@ -57,7 +57,7 @@ export function StudentAreaHistory() {
 
       <Button
         sx={{ mt: 4 }}
-        variant="outlined"
+        variant="contained"
         onClick={() => navigate('/student-area')}
       >
         Voltar

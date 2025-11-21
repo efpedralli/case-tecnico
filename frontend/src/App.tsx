@@ -6,6 +6,8 @@ import { CheckinPage } from './pages/CheckinPage';
 import { StudentAreaPage } from './pages/StudentAreaPage';
 import { StudentAreaHistory } from './pages/StudentAreaHistory';
 import { useAuthContext } from './context/AuthContext';
+import { StudentHistoryAdminPage } from './pages/StudentHistoryAdminPage';
+
 
 function AdminRoute({ children }: { children: JSX.Element }) {
   const { token, role } = useAuthContext();
@@ -40,6 +42,14 @@ export default function App() {
         element={
           <AdminRoute>
             <StudentsPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/students/:id/history"
+        element={
+          <AdminRoute>
+            <StudentHistoryAdminPage />
           </AdminRoute>
         }
       />

@@ -168,7 +168,7 @@ export function StudentAreaPage() {
 
       <Button
         sx={{ mt: 4 }}
-        variant="outlined"
+        variant="contained"
         onClick={() => navigate('/student-history')}
       >
         Ver meu histórico

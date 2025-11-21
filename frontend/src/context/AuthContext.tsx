@@ -61,9 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   // LOGIN ESTUDANTE
-  async function studentLogin(registration: string, password: string) {
+  async function studentLogin(email: string, password: string) {
     const { data } = await api.post('/auth/student/student-login', {
-      registration,
+      email,
       password,
     });
 

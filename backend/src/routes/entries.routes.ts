@@ -90,11 +90,37 @@ entriesRouter.get('/occupancy', async (_req, res) => {
       name: env.name,
       type: env.type,
       currentOccupancy: env.entries.length,
+      capacity: env.capacity,
     }));
 
     return res.json(result);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ message: 'Erro ao calcular ocupação.' });
+  }
+});
+
+entriesRouter.get('/history', ensureAuthenticated, async (req, res) => {
+  try {
+    const { studentId } = req.query;
+
+    if (!studentId) {
+      return res
+        .status(400)
+        .json({ message: 'studentId é obrigatório na query string.' });
+    }
+
+    const entries = await prisma.entry.findMany({
+      where: { studentId: Number(studentId) },
+      orderBy: { checkInAt: 'desc' },
+      include: { environment: true },
+    });
+
+    return res.json(entries);
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ message: 'Erro ao buscar histórico de presenças.' });
   }
 });

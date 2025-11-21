@@ -81,7 +81,7 @@ export function CheckinPage() {
                 select
                 label="Aluno"
                 size="small"
-                fullWidth
+                sx={{width: '40%'}}
                 value={selectedStudent}
                 onChange={(e) => setSelectedStudent(e.target.value)}
               >
@@ -96,7 +96,7 @@ export function CheckinPage() {
                 select
                 label="Ambiente"
                 size="small"
-                fullWidth
+                sx={{width: '39%'}}
                 value={selectedEnv}
                 onChange={(e) => setSelectedEnv(e.target.value)}
               >
@@ -117,7 +117,7 @@ export function CheckinPage() {
                   Check-in
                 </Button>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   color="primary"
                   disabled={!selectedStudent}
                   onClick={handleCheckout}
