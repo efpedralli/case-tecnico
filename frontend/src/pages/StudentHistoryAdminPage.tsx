@@ -9,7 +9,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from '@mui/material';
+
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api/client';
@@ -159,99 +165,114 @@ async function handleAdminCheckout() {
     <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
       
       <Box flex={2}>
-        {studentName && (
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Aluno: {studentName}
-          </Typography>
-        )}
+  
 
-        <Stack spacing={2}>
+  <Card sx={{ p: 2, borderRadius: 2 }}>
+    <Typography variant="subtitle1" sx={{ mb: 2 }}>
+      Histórico de presenças de {studentName}
+
+    </Typography>
+
+    {entries.length === 0 ? (
+      <Typography variant="body2" color="text.secondary">
+        Este aluno ainda não possui presenças registradas.
+      </Typography>
+    ) : (
+        <Box sx={{ 
+            maxHeight: 400,
+            overflowY: "scroll" 
+            }}>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell><strong>Ambiente</strong></TableCell>
+            <TableCell><strong>Entrada</strong></TableCell>
+            <TableCell><strong>Saída</strong></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {entries.map((e) => (
-            <Card key={e.id} sx={{ p: 2, borderRadius: 2 }}>
-              <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                {e.environment.name}
-              </Typography>
-              <Typography variant="body2">
-                Entrada: {new Date(e.checkInAt).toLocaleString()}
-              </Typography>
-              <Typography variant="body2">
-                Saída:{' '}
+            <TableRow key={e.id}>
+              <TableCell>{e.environment.name}</TableCell>
+              <TableCell>
+                {new Date(e.checkInAt).toLocaleString()}
+              </TableCell>
+              <TableCell>
                 {e.checkOutAt
                   ? new Date(e.checkOutAt).toLocaleString()
                   : '—'}
-              </Typography>
-            </Card>
+              </TableCell>
+            </TableRow>
           ))}
-
-          {entries.length === 0 && (
-            <Typography variant="body2" color="text.secondary">
-              Este aluno ainda não possui presenças registradas.
-            </Typography>
-          )}
-        </Stack>
-
-        <Button
-          sx={{ mt: 4 }}
-          variant="contained"
-          onClick={() => navigate('/students')}
-        >
-          Voltar para lista de alunos
-        </Button>
+        </TableBody>
+      </Table>
       </Box>
+    )}
+  </Card>
+
+  <Button
+    sx={{ mt: 4 }}
+    variant="contained"
+    onClick={() => navigate('/students')}
+  >
+    Voltar para lista de alunos
+  </Button>
+</Box>
+
 
       <Box flex={1}>
         <Card sx={{ p: 3 }}>
             <Typography variant="subtitle1" sx={{ mt: 3 }}>
-  Presença manual
-</Typography>
+            Presença manual
+            </Typography>
 
-{currentEnvId ? (
-  <Typography variant="body2" sx={{ mb: 1 }}>
-    Atualmente em: <strong>{currentEnvName}</strong>
-  </Typography>
-) : (
-  <Typography variant="body2" sx={{ mb: 1 }}>
-    Este aluno não está presente em nenhuma sala no momento.
-  </Typography>
-)}
+            {currentEnvId ? (
+            <Typography variant="body2" sx={{ mb: 1 }}>
+                Atualmente em: <strong>{currentEnvName}</strong>
+            </Typography>
+            ) : (
+            <Typography variant="body2" sx={{ mb: 1 }}>
+                Este aluno não está presente em nenhuma sala no momento.
+            </Typography>
+            )}
 
-<FormControl fullWidth size="small" sx={{ mt: 1 }}>
-  <InputLabel id="env-select-label">Sala</InputLabel>
-  <Select
-    labelId="env-select-label"
-    label="Sala"
-    value={selectedEnvId}
-    onChange={(e) =>
-      setSelectedEnvId(e.target.value ? Number(e.target.value) : '')
-    }
-  >
-    {envs.map((env) => (
-      <MenuItem key={env.id} value={env.id}>
-        {env.name}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl>
+            <FormControl fullWidth size="small" sx={{ mt: 1 }}>
+            <InputLabel id="env-select-label">Sala</InputLabel>
+            <Select
+                labelId="env-select-label"
+                label="Sala"
+                value={selectedEnvId}
+                onChange={(e) =>
+                setSelectedEnvId(e.target.value ? Number(e.target.value) : '')
+                }
+            >
+                {envs.map((env) => (
+                <MenuItem key={env.id} value={env.id}>
+                    {env.name}
+                </MenuItem>
+                ))}
+            </Select>
+            </FormControl>
 
-<Stack direction="row" spacing={2} sx={{ mt: 2, mb: 3 }}>
-  <Button
-    variant="contained"
-    color="secondary"
-    onClick={handleAdminCheckin}
-    disabled={presenceLoading || !selectedEnvId}
-  >
-    Registrar entrada
-  </Button>
+            <Stack direction="row" spacing={2} sx={{ mt: 2, mb: 3 }}>
+            <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleAdminCheckin}
+                disabled={presenceLoading || !selectedEnvId}
+            >
+                Registrar entrada
+            </Button>
 
-  <Button
-    variant="outlined"
-    color="secondary"
-    onClick={handleAdminCheckout}
-    disabled={presenceLoading || !currentEnvId}
-  >
-    Registrar saída
-  </Button>
-</Stack>
+            <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleAdminCheckout}
+                disabled={presenceLoading || !currentEnvId}
+            >
+                Registrar saída
+            </Button>
+            </Stack>
 
           <Typography variant="h6" sx={{ mb: 2 }}>
             Dados do Aluno
