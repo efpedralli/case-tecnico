@@ -17,7 +17,6 @@ import {
   Checkbox 
 } from '@mui/material';
 import ReactApexChart from 'react-apexcharts';
-import  ApexOptions  from 'apexcharts';
 import { buildEnvironmentOccupancySeries } from '../utils/buildEnvironmentOccupancySeries';
 import { theme } from '../design-system/theme';
 
