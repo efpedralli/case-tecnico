@@ -34,6 +34,7 @@ export function StudentAreaPage() {
   const [occupancy, setOccupancy] = useState<Occupancy[]>([]);
   const [myStatus, setMyStatus] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  
 
   if (!session) {
     navigate('/login');
@@ -48,7 +49,7 @@ export function StudentAreaPage() {
 
     setEnvs(envRes.data);
     setOccupancy(occRes.data);
-    setMyStatus(myRes.data); // { inEnvironmentId: number | null }
+    setMyStatus(myRes.data);
   }
 
   useEffect(() => {

@@ -5,6 +5,7 @@ import { Card } from '../design-system/components/Card';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { QrReader } from 'react-qr-reader';
 import api from '../api/client';
+import { CameraPreview } from '../utils/cameraPreview';
 
 export function StudentScanPage() {
   const navigate = useNavigate();
@@ -18,10 +19,8 @@ export function StudentScanPage() {
       setLoading(true);
       setScannedText(text);
 
-      // Nosso QR vem como "envId=6"
       let envId: string | null = null;
 
-      // 1) tenta formato envId=6
       const match = text.match(/envId\s*=\s*(\d+)/i);
       if (match) {
         envId = match[1];
@@ -31,8 +30,6 @@ export function StudentScanPage() {
         throw new Error('QR Code inválido. Não foi possível encontrar o envId.');
       }
 
-      // aqui podemos usar o fluxo simples: sempre CHECKIN
-      // (checkout continua pelo botão "Registrar Saída" da StudentAreaPage)
       await api.post('/student/entries/checkin', {
         environmentId: Number(envId),
       });
@@ -51,7 +48,7 @@ export function StudentScanPage() {
   }
 
   return (
-    <AppShell title="Ler QR Code da Sala">
+    <AppShell disableContainer title="Ler QR Code da Sala">
       <Stack spacing={3}>
         <Button
           variant="contained"
@@ -61,22 +58,36 @@ export function StudentScanPage() {
           Voltar para área do estudante
         </Button>
 
-        <Card>
+        <Card sx={{ p: 2, borderRadius: 3, minHeight: '70vh' }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Aponte a câmera para o QR Code da sala
           </Typography>
 
-          <Box sx={{ maxWidth: 400, mx: 'auto' }}>
+          <Box sx={{ 
+            maxWidth: 450,
+            mx: 'auto',
+            overflow: 'hidden',
+            height: '60vh',
+            borderRadius: 2,
+            backgroundColor: 'black',
+          }}>
+            <CameraPreview />
+
             <QrReader
               constraints={{ facingMode: 'environment' }}
-              onResult={(result) => {
+              onResult={(result, error) => {
+                if (error) {
+                  return;
+                }
+
                 if (!!result && !loading) {
                   const text = result.getText();
                   processQR(text);
                 }
               }}
-              containerStyle={{ width: '100%' }}
-              videoStyle={{ width: '100%' }}
+              containerStyle={{ width: '100%', height: '100%' }}
+              videoContainerStyle={{ width: '100%', height: '100%' }}
+              videoStyle={{ width: '100%', height: '100%' }}
             />
           </Box>
 
