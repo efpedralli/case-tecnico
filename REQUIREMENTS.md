@@ -61,9 +61,11 @@ FRONTEND
 
 - Instalar as dependências
   npm install
+  Pode haver erro com dependência do QR Code, nesse caso rodar com npm install --legacy-per-deps
 
 - Rodar frontend
   npm run dev
+  
 
 ---
 
