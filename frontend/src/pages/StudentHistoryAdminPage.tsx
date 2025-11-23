@@ -21,7 +21,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api/client';
 import { AppShell } from '../design-system/components/AppShell';
-import { useAuth } from '../design-system/hooks/useAuth';
 
 type Entry = {
   id: number;
