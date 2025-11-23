@@ -10,6 +10,7 @@ import { useAuthContext } from './context/AuthContext';
 import { StudentHistoryAdminPage } from './pages/StudentHistoryAdminPage';
 import { EnvironmentManagementPage } from './pages/EnvironmentManagementPage';
 import { StudentScanPage } from './pages/StudentScanPage';
+import StudentUpdatePage from './pages/StudentUpdatePage';
 
 
 
@@ -32,7 +33,6 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
 
-      {/* ROTAS ADMIN */}
       <Route
         path="/dashboard"
         element={
@@ -66,7 +66,6 @@ export default function App() {
         }
       />
 
-      {/* ROTAS ESTUDANTE */}
       <Route
         path="/student-area"
         element={
@@ -92,15 +91,21 @@ export default function App() {
         }
       />
       <Route
-  path="/student-scan"
-  element={
-    <StudentRoute>
-      <StudentScanPage />
-    </StudentRoute>
-  }
-/>
-
-
+        path="/student-scan"
+        element={
+          <StudentRoute>
+            <StudentScanPage />
+          </StudentRoute>
+        }
+      />
+      <Route 
+        path="/student-update"
+        element={
+          <StudentRoute>
+            <StudentUpdatePage />
+          </StudentRoute>
+        }
+      />
 
       {/* DEFAULT */}
       <Route path="*" element={<Navigate to="/login" replace />} />

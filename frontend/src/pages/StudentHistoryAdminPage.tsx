@@ -14,12 +14,14 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  TableContainer,
 } from '@mui/material';
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api/client';
 import { AppShell } from '../design-system/components/AppShell';
+import { useAuth } from '../design-system/hooks/useAuth';
 
 type Entry = {
   id: number;
@@ -54,8 +56,9 @@ export function StudentHistoryAdminPage() {
   const [studentName, setStudentName] = useState<string>('');
   const [studentData, setStudentData] = useState<any>(null);
   const [envs, setEnvs] = useState<Environment[]>([]);
-const [selectedEnvId, setSelectedEnvId] = useState<number | ''>('');
-const [presenceLoading, setPresenceLoading] = useState(false);
+  const [selectedEnvId, setSelectedEnvId] = useState<number | ''>('');
+  const [presenceLoading, setPresenceLoading] = useState(false);
+
 
 
 
@@ -68,39 +71,39 @@ const [presenceLoading, setPresenceLoading] = useState(false);
     
 
     try {
-  const studentRes = await api.get(`/students/${id}`);
-  setStudentName(studentRes.data.name);
-  setStudentData(studentRes.data);
+        const studentRes = await api.get(`/students/${id}`);
+        setStudentName(studentRes.data.name);
+        setStudentData(studentRes.data);
 
-  const envRes = await api.get<Environment[]>('/environments');
-  setEnvs(envRes.data);
-} catch {
-  setStudentName('');
-}
-
+        const envRes = await api.get<Environment[]>('/environments');
+        setEnvs(envRes.data);
+      } catch {
+        setStudentName('');
+      }
   }
+
 
   useEffect(() => {
     loadHistory();
   }, [id]);
 
   async function handleUpdate() {
-  if (!id) return;
+    if (!id) return;
 
-  try {
-    await api.put(`/students/${id}`, {
-      name: studentName,
-      registration: studentData.registration,
-      email: studentData.email,
-      course: studentData.course,
-    });
+    try {
+      await api.put(`/students/${id}`, {
+        name: studentName,
+        registration: studentData.registration,
+        email: studentData.email,
+        course: studentData.course,
+      });
 
-    alert('Dados atualizados com sucesso!');
-  } catch (err) {
-    console.error(err);
-    alert('Erro ao atualizar aluno.');
+      alert('Dados atualizados com sucesso!');
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao atualizar aluno.');
+    }
   }
-}
 
 async function handleSoftDelete() {
   if (!id) return;
@@ -190,6 +193,7 @@ async function handleAdminCheckout() {
             maxHeight: 400,
             overflowY: "scroll" 
             }}>
+              <TableContainer>
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -214,6 +218,7 @@ async function handleAdminCheckout() {
           ))}
         </TableBody>
       </Table>
+      </TableContainer>
       </Box>
     )}
   </Card>

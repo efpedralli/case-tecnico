@@ -15,9 +15,10 @@ import { useNavigate } from 'react-router-dom';
 type Props = {
   title?: string;
   children: ReactNode;
+  disableContainer?: boolean;
 };
 
-export function AppShell({ title, children }: Props) {
+export function AppShell({ title, children, disableContainer }: Props) {
   const { logout, role } = useAuth();
   const navigate = useNavigate();
 
@@ -75,6 +76,12 @@ export function AppShell({ title, children }: Props) {
               >
                 Histórico
               </Button>
+              <Button
+                color="inherit"
+                onClick={() => navigate('/student-update')}
+              >
+                Atualizar Dados
+              </Button>
             </>
           )}
 
@@ -86,14 +93,27 @@ export function AppShell({ title, children }: Props) {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {title && (
-          <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
-            {title}
-          </Typography>
-        )}
-        {children}
-      </Container>
+      {
+        !disableContainer ? (
+          <Container maxWidth="lg" sx={{ py: 4 }}>
+            {title && (
+              <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
+                {title}
+              </Typography>
+            )}
+            {children}
+          </Container>
+        ) : (
+          <Box sx={{ p: 2 }}>
+            {title && (
+              <Typography variant="h4" sx={{ mb: 3, fontWeight: 600 }}>
+                {title}
+              </Typography>
+            )}
+            {children}
+          </Box>
+        )
+      }
     </Box>
   );
 }

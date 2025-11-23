@@ -12,6 +12,7 @@ import {
   Box,
   Button,
   TextField,
+  TableContainer,
 } from '@mui/material';
 import api from '../api/client';
 import { useNavigate } from 'react-router-dom';
@@ -177,6 +178,8 @@ export function DashboardPage() {
             Ocupação por ambiente
           </Typography>
 
+          <TableContainer>
+
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -251,6 +254,7 @@ export function DashboardPage() {
               ))}
             </TableBody>
           </Table>
+          </TableContainer>
         </Card>
       </Stack>
     </AppShell>

@@ -193,9 +193,7 @@ function toggleSort(field: 'name' | 'registration') {
           Voltar para o dashboard
         </Button>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
-          <Card 
-          sx={{ width: '70%'}}
-          >
+          <Card sx={{ flex: 1 }}>
           {env ? (
             <>
             <Box>

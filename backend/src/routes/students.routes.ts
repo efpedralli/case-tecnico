@@ -77,7 +77,9 @@ studentsRouter.post('/', async (req, res) => {
 studentsRouter.put('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { name, registration, email, course } = req.body;
+    const { name, registration, email, course, password } = req.body;
+
+
 
     const student = await prisma.student.update({
       where: { id },
@@ -86,6 +88,7 @@ studentsRouter.put('/:id', async (req, res) => {
         registration, 
         email, 
         course,
+        passwordHash: password ? await bcrypt.hash(password, 10) : undefined,
         updatedAt: new Date(),
        },
     });

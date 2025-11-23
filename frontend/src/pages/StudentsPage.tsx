@@ -9,6 +9,7 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  TableContainer,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import api from '../api/client';
@@ -232,6 +233,7 @@ function toggleSort(field: 'id' | 'name' | 'registration' | 'email' | 'course') 
           </Box>
 
 
+          <TableContainer>
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -293,6 +295,7 @@ function toggleSort(field: 'id' | 'name' | 'registration' | 'email' | 'course') 
               ))}
             </TableBody>
           </Table>
+          </TableContainer>
         </Card>
       </Stack>
     </AppShell>
